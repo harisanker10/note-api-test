@@ -49,14 +49,14 @@ app.post('/note',(req,res)=>{
 
     createdAt = Date.now();
     
-    const note = notes.push({
+    const length = notes.push({
         _id: id,
         title,
         description,
         isCompleted,
         createdAt
     })
-    res.status(200).json({status: 'success',data: {note}});
+    res.status(200).json({status: 'success',data: notes[length-1]});
 })
 
 app.delete('/note/:id',(req,res)=>{
