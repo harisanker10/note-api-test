@@ -45,6 +45,7 @@ app.post('/note',(req,res)=>{
         return;
     }
 
+    id = uuid();
     createdAt = Date.now();
     updatedAt = Date.now();
     
