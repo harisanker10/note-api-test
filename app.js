@@ -53,7 +53,7 @@ app.post('/note',(req,res)=>{
         _id: id,
         title,
         description,
-        isCompleted,
+        isCompleted : false,
         createdAt,
         updatedAt
     })
