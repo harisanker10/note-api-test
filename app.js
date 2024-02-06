@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-
+const asyncHandler = require('express-async-handler');
 const { v4: uuid } = require('uuid');
 
 const notes = [];
@@ -22,23 +22,20 @@ app.get('/', (req, res) => {
         
         <p>For more details on how to use each endpoint, refer to the API documentation.</p>
     `;
-    res.setHeader('Connection','close');
 
     res.send(documentation);
 });
 
-app.get('/note/:id', (req, res) => {
+app.get('/note/:id',asyncHandler((req, res) => {
     const note = notes.find(note => note._id === req.params.id);
-    res.setHeader('Connection', 'close');
     res.json(note);
-})
+}))
 
-app.get('/notes', (req, res) => {
-    res.setHeader('Connection', 'close');
+app.get('/notes',asyncHandler( (req, res) => {
     res.json({ data: notes });
-})
+}))
 
-app.post('/note', (req, res) => {
+app.post('/note', asyncHandler((req, res) => {
 
     console.log(req.body);
 
@@ -49,9 +46,9 @@ app.post('/note', (req, res) => {
         return;
     }
 
-    id = uuid();
-    createdAt = Date.now();
-    updatedAt = Date.now();
+    const id = uuid();
+    const createdAt = Date.now();
+    const updatedAt = Date.now();
 
     const length = notes.push({
         _id: id,
@@ -61,19 +58,17 @@ app.post('/note', (req, res) => {
         createdAt,
         updatedAt
     })
-    res.setHeader('Connection', 'close'); 
     res.status(200).json({ status: 'success', data: notes[length - 1] });
-})
+}))
 
-app.delete('/note/:id', (req, res) => {
+app.delete('/note/:id', asyncHandler((req, res) => {
     const id = req.params.id;
     const index = notes.findIndex(note =>  note._id === id );
     notes.splice(index, 1);
-    res.setHeader('Connection', 'close'); 
     res.status(200).json("success");
-})
+}))
 
-app.put('/note/:id', (req, res) => {
+app.put('/note/:id', asyncHandler((req, res) => {
 
     const index = notes.findIndex((obj) => obj._id === req.params.id);
 
@@ -87,12 +82,15 @@ app.put('/note/:id', (req, res) => {
     })
 
     notes[index] = { ...notes[index], ...req.body, updatedAt: Date.now() };
-    res.setHeader('Connection', 'close'); 
     res.status(200).json({ status: "success", data: notes[index] })
 
+}))
+
+app.use((err,req,res,next)=>{
+    if(err)
+    console.log(err);
+    res.status(400).json("something went wrong");
 })
-
-
 
 const port = 8090;
 
