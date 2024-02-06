@@ -67,7 +67,7 @@ app.post('/note', (req, res) => {
 
 app.delete('/note/:id', (req, res) => {
     const id = req.params.id;
-    const index = notes.findIndex(note => { note._id === id });
+    const index = notes.findIndex(note =>  note._id === id );
     notes.splice(index, 1);
     res.setHeader('Connection', 'close'); 
     res.status(200).json("success");
