@@ -32,7 +32,7 @@ app.get('/note/:id',(req,res)=>{
 })
 
 app.get('/notes',(req,res)=>{
-    res.json(notes);
+    res.json({data:notes});
 })
 
 app.post('/note',(req,res)=>{
