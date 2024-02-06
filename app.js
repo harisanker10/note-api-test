@@ -1,12 +1,12 @@
 const express = require("express");
 const app = express();
 
-const {v4:uuid} = require('uuid');
+const { v4: uuid } = require('uuid');
 
 const notes = [];
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
     const documentation = `
@@ -22,65 +22,73 @@ app.get('/', (req, res) => {
         
         <p>For more details on how to use each endpoint, refer to the API documentation.</p>
     `;
+    res.setHeader('Connection','close');
 
     res.send(documentation);
 });
 
-app.get('/note/:id',(req,res)=>{
-    const note = notes.find(note=>note._id === req.params.id);
+app.get('/note/:id', (req, res) => {
+    const note = notes.find(note => note._id === req.params.id);
+    res.setHeader('Connection', 'close');
     res.json(note);
 })
 
-app.get('/notes',(req,res)=>{
-    res.json({data:notes});
+app.get('/notes', (req, res) => {
+    res.setHeader('Connection', 'close');
+    res.json({ data: notes });
 })
 
-app.post('/note',(req,res)=>{
-    
+app.post('/note', (req, res) => {
+
     console.log(req.body);
-    
-    let {title, description } = req.body;
-    if(!title || !description){
-        res.status(400).json("Check values");
+
+    let { title, description } = req.body;
+    if (!title || !description) {
+        res.setHeader('Connection', 'close');
+         res.status(400).json("Check values");
         return;
     }
 
     id = uuid();
     createdAt = Date.now();
     updatedAt = Date.now();
-    
+
     const length = notes.push({
         _id: id,
         title,
         description,
-        isCompleted : false,
+        isCompleted: false,
         createdAt,
         updatedAt
     })
-    res.status(200).json({status: 'success',data: notes[length-1]});
+    res.setHeader('Connection', 'close'); 
+    res.status(200).json({ status: 'success', data: notes[length - 1] });
 })
 
-app.delete('/note/:id',(req,res)=>{
+app.delete('/note/:id', (req, res) => {
     const id = req.params.id;
-    const index = notes.findIndex(note =>{note._id === id});
-    notes.splice(index,1);
+    const index = notes.findIndex(note => { note._id === id });
+    notes.splice(index, 1);
+    res.setHeader('Connection', 'close'); 
     res.status(200).json("success");
 })
 
-app.put('/note/:id',(req,res)=>{
+app.put('/note/:id', (req, res) => {
 
-    const index = notes.findIndex((obj)=>obj._id === req.params.id);
+    const index = notes.findIndex((obj) => obj._id === req.params.id);
 
-    const keys = ['title','description','isCompleted'];
-    Object.keys(req.body).forEach((key)=>{
-        if(keys.indexOf(key) === -1){
+    const keys = ['title', 'description', 'isCompleted'];
+    Object.keys(req.body).forEach((key) => {
+        if (keys.indexOf(key) === -1) {
+            res.setHeader('Connection', 'close'); 
             res.status(400).json("Invalid keys");
             return;
         }
     })
 
-    notes[index] = {...notes[index], ...req.body, updatedAt: Date.now()};
-    res.status(200).json({status:"success", data: notes[index]})
+    notes[index] = { ...notes[index], ...req.body, updatedAt: Date.now() };
+    res.setHeader('Connection', 'close'); 
+    res.status(200).json({ status: "success", data: notes[index] })
 
 })
 
@@ -88,4 +96,4 @@ app.put('/note/:id',(req,res)=>{
 
 const port = 8090;
 
-app.listen(port,'0.0.0.0',()=>console.log(`listening at ${port} `))
+app.listen(port, '0.0.0.0', () => console.log(`listening at ${port} `))
