@@ -14,10 +14,12 @@ app.get('/', (req, res) => {
         <p>Welcome to the Notes API. Here are the available endpoints:</p>
         <ul>
             <li><strong>GET /notes</strong>: Get all notes</li>
-            <li><strong>GET /note/:id</strong>: Get a specific note by ID</li>
+            <li><strong>GET /note/<id></strong>: Get a specific note by ID</li>
             <li><strong>POST /note</strong>: Create a new note</li>
-            <li><strong>DELETE /note/:id</strong>: Delete a note by ID</li>
+            <li><strong>DELETE /note/<id></strong>: Delete a note by ID</li>
+            <li><strong>PUT /note/<id></strong>: Update a note by id </li>
         </ul>
+        
         <p>For more details on how to use each endpoint, refer to the API documentation.</p>
     `;
 
@@ -37,24 +39,22 @@ app.post('/note',(req,res)=>{
     
     console.log(req.body);
     
-    let {title, description, isCompleted} = req.body;
-    if(!title || !description || !isCompleted.toString() === ''){
+    let {title, description } = req.body;
+    if(!title || !description){
         res.status(400).json("Check values");
         return;
     }
 
-    let id = null;
-    if(!req.body._id)id = uuid();
-    else id = req.body.id;
-
     createdAt = Date.now();
+    updatedAt = Date.now();
     
     const length = notes.push({
         _id: id,
         title,
         description,
         isCompleted,
-        createdAt
+        createdAt,
+        updatedAt
     })
     res.status(200).json({status: 'success',data: notes[length-1]});
 })
@@ -66,7 +66,7 @@ app.delete('/note/:id',(req,res)=>{
     res.status(200).json("success");
 })
 
-app.put('/notes/:id',(req,res)=>{
+app.put('/note/:id',(req,res)=>{
 
     const index = notes.findIndex((obj)=>obj._id === req.params.id);
 
@@ -80,8 +80,6 @@ app.put('/notes/:id',(req,res)=>{
 
     notes[index] = {...notes[index], ...req.body, updatedAt: Date.now()};
     res.status(200).json({status:"success", data: notes[index]})
-
-    
 
 })
 
